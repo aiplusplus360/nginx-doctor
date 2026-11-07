@@ -36,4 +36,11 @@ jobs:
       - name: CLI contract
         run: |
           nginx-doctor --version
-          nginx-doctor examples/bad.conf; test $? -eq 1 || true
+          set +e
+          nginx-doctor examples/bad.conf > findings.txt
+          code=$?
+          set -e
+          cat findings.txt
+          grep -q "finding(s)" findings.txt
+          echo "exit code: $code"
+          test "$code" -eq 1
